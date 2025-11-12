@@ -45,9 +45,8 @@ export default function LoginPage() {
       await dispatch(login(values)).unwrap();
       toast.success("Welcome back 👋");
       const redirect = search.get("redirect");
-      router.replace(
-        redirect && redirect.startsWith("/") ? redirect : "/dashboard"
-      );
+      router.replace;
+      redirect && redirect.startsWith("/") ? redirect : "/dashboard"();
     } catch (e) {
       const msg =
         typeof e === "string" ? e : (e as any)?.message || "Login failed";

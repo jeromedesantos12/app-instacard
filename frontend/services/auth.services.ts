@@ -21,7 +21,8 @@ export async function loginRequest(body: LoginPayload) {
   try {
     const res = await api.post<ApiResponse<{ token?: string }>>(
       "/auth/login",
-      body
+      body,
+      { withCredentials: true }
     );
     return res.data;
   } catch (e) {

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { appError } from "../utils/error";
 
 const version = process.env.API_VERSION;
 
