@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "SocialPlatform" AS ENUM ('instagram', 'tiktok', 'x', 'linkedin', 'youtube', 'github');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
@@ -20,7 +23,7 @@ CREATE TABLE "social_links" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "user_id" UUID NOT NULL,
     "platform" TEXT NOT NULL,
-    "handle" TEXT,
+    "username" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "order_index" INTEGER NOT NULL DEFAULT 0,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
