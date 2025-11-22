@@ -9,7 +9,7 @@
     "dev": "ts-node-dev --loader ts-node/esm src/app.ts",
     "seed": "ts-node src/connections/seed.ts",
     "studio": "bunx prisma studio",
-    "generate": "bunx prisma generate --no-engine",
+    "generate": "bunx prisma generate",
     "migrate": "bunx prisma migrate dev --name init",
     "psql": "psql -U jeremy -d dumb"
   },

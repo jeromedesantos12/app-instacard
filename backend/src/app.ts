@@ -13,7 +13,7 @@ import router from "./routes";
 config();
 
 const url = process.env.BASE_URL;
-const port = new URL(url as string).port;
+const port = process.env.PORT;
 const app = express();
 const server = http.createServer(app);
 
