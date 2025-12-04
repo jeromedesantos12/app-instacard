@@ -56,7 +56,7 @@ export async function googleCallback(
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
     })
     .redirect("http://localhost:8080/");
@@ -91,7 +91,7 @@ export async function loginAuth(
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         maxAge: 24 * 60 * 60 * 1000,
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
       })
       .status(200)
@@ -110,7 +110,7 @@ export function logoutAuth(req: Request, res: Response, next: NextFunction) {
       .clearCookie("token", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
       })
       .status(200)
