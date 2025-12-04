@@ -3,7 +3,7 @@ import express from "express";
 import http from "http";
 import { config } from "dotenv";
 import { errorHandler } from "./middlewares/error";
-// import { corsMiddleware } from "./utils/cors";
+import { corsMiddleware } from "./utils/cors";
 import router from "./routes";
 
 config();
@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 app.use(cookieParser());
 app.use(express.json());
-// app.use(corsMiddleware);
+app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
 
 // app.use("/uploads", express.static(resolve(process.cwd(), "uploads")));
