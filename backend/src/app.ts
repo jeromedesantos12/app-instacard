@@ -15,7 +15,7 @@ const server = http.createServer(app);
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(corsMiddleware);
+// app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
 
 // app.use("/uploads", express.static(resolve(process.cwd(), "uploads")));
