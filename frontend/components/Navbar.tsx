@@ -32,7 +32,7 @@ export type NavbarProps = {
   translucent?: boolean;
   rightActions?: React.ReactNode;
   showUserNameNearBrand?: boolean;
-  onProfileUpdated?: (user: any) => void;
+  onProfileUpdated?: (user: Record<string, unknown>) => void;
 };
 
 function getInitials(name?: string) {
@@ -80,7 +80,6 @@ function useSimpleTheme() {
 }
 
 export function Navbar({
-  brand = "Instacard",
   brandHref = "",
   profileHandle,
   baseDomain = "instacard.app",
@@ -123,7 +122,7 @@ export function Navbar({
         );
         const bio = (u?.bio ?? "") || "";
         const avatarUrl =
-          toPublicUrl((u as any)?.avatar_url ?? (u as any)?.avatar ?? "") || "";
+          toPublicUrl((u as Record<string, string>)?.avatar_url ?? (u as Record<string, string>)?.avatar ?? "") || "";
         setProfile({ name, bio, avatarUrl });
       } catch {}
     })();
@@ -300,11 +299,11 @@ export function Navbar({
             name: user.name ?? p.name,
             bio: user.bio ?? p.bio,
             avatarUrl:
-              toPublicUrl((user as any).avatar_url ?? (user as any).avatar) ??
+              toPublicUrl((user as Record<string, string>).avatar_url ?? (user as Record<string, string>).avatar) ??
               p.avatarUrl,
           }));
           toast.success("Profile updated");
-          onProfileUpdated?.(user);
+          onProfileUpdated?.(user as Record<string, unknown>);
         }}
       />
     </header>

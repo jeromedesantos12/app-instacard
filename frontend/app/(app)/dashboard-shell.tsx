@@ -13,8 +13,6 @@ export default function DashboardShell({
   children: React.ReactNode;
 }) {
   const profileHandle = user?.username ?? "";
-  const userName = user?.name || user?.username || "User";
-  const avatarUrlRaw = (user as any)?.avatar_url ?? (user as any)?.avatar ?? "";
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background text-foreground">
@@ -22,8 +20,6 @@ export default function DashboardShell({
         brand="Instacard"
         brandHref="/dashboard"
         profileHandle={profileHandle}
-        userName={userName}
-        avatarUrl={avatarUrlRaw}
         rightActions={
           <Button
             variant="outline"

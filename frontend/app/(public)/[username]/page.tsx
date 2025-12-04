@@ -86,12 +86,12 @@ function Theming({
 
 export default function PublicProfilePage() {
   const router = useRouter();
-  const params = useParams();
+  const params = useParams() as Record<string, string | string[] | undefined>;
   const raw =
-    typeof (params as any)?.username === "string"
-      ? (params as any).username
-      : Array.isArray((params as any)?.username)
-      ? (params as any).username[0]
+    typeof params?.username === "string"
+      ? params.username
+      : Array.isArray(params?.username)
+      ? params.username[0]
       : "";
   const username = decodeURIComponent(raw ?? "");
   const [data, setData] = React.useState<PublicProfile | null | "loading">(
@@ -118,9 +118,10 @@ export default function PublicProfilePage() {
             .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
         );
       })
-      .catch((e: any) => {
+      .catch((e: unknown) => {
         if (!ok) return;
-        setError(e?.message || "Failed to load profile");
+        const error = e as { message?: string } | null;
+        setError(error?.message || "Failed to load profile");
         setData(null);
         setSocials([]);
       });
@@ -155,9 +156,8 @@ export default function PublicProfilePage() {
       </div>
     );
   }
-
   const avatarSrc =
-    toPublicUrl((data as any).avatar_url ?? (data as any).avatar ?? "") ||
+    toPublicUrl(((data as Record<string, unknown>).avatar_url as string | undefined) ?? ((data as Record<string, unknown>).avatar as string | undefined) ?? "") ||
     "/avatar-placeholder.jpg";
 
   const links = (data.links ?? [])

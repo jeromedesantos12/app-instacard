@@ -149,7 +149,7 @@ export function AddSocialDialog({
       setUsername("");
       setPlatform("");
       onSuccess?.();
-    } catch (err: any) {
+    } catch (err: unknown) {
       // toast.error(err?.message ?? "Failed to save"); // optional
       console.error(err);
     } finally {

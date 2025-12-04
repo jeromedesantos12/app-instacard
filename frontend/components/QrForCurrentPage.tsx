@@ -15,11 +15,9 @@ export function QrForCurrentPage({
   className = "",
 }: QrForCurrentPageProps) {
   const [dataUrl, setDataUrl] = React.useState<string>("");
-  const [href, setHref] = React.useState<string>("");
 
   React.useEffect(() => {
     const url = typeof window !== "undefined" ? window.location.href : "";
-    setHref(url);
     if (!url) return;
 
     QRCode.toDataURL(url, {
@@ -44,14 +42,16 @@ export function QrForCurrentPage({
         className,
       ].join(" ")}
     >
-      <img
-        src={dataUrl}
-        alt="QR to this page"
-        width={size}
-        height={size}
-        className="select-none"
-        draggable={false}
-      />
+      <picture>
+        <img
+          src={dataUrl}
+          alt="QR to this page"
+          width={size}
+          height={size}
+          className="select-none"
+          draggable={false}
+        />
+      </picture>
     </div>
   );
 }

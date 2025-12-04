@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import {
   Form,
@@ -26,9 +26,6 @@ import { registerRequest } from "@/services/auth.services";
 
 export default function RegisterPage() {
   const router = useRouter();
-
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirm, setShowConfirm] = React.useState(false);
 
   const form = useForm<RegisterValues>({
     resolver: zodResolver(RegisterSchema),
@@ -55,8 +52,9 @@ export default function RegisterPage() {
       });
       toast.success("Account created! Please sign in.");
       router.push("/login");
-    } catch (e: any) {
-      toast.error(e?.message || "Registration failed. Please try again.");
+    } catch (e: unknown) {
+      const error = e as { message?: string } | null;
+      toast.error(error?.message || "Registration failed. Please try again.");
     }
   };
 
@@ -152,7 +150,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <div className="relative">
                           <Input
-                            type={showPassword ? "text" : "password"}
+                            type="password"
                             placeholder="••••••••••••••••"
                             {...field}
                           />
@@ -173,7 +171,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <div className="relative">
                           <Input
-                            type={showConfirm ? "text" : "password"}
+                            type="password"
                             placeholder="••••••••••••••••"
                             {...field}
                           />

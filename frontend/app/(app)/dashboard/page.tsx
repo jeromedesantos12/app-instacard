@@ -48,7 +48,6 @@ import { getMe, type User } from "@/services/user.services";
 import {
   getLinks as fetchLinksSvc,
   type LinkItem as LinkItemSvc,
-  updateLink as updateLinkSvc,
   deleteLink as deleteLinkSvc,
 } from "@/services/link.services";
 import {
@@ -56,6 +55,7 @@ import {
   upsertSocial,
   restoreSocial,
   type SocialLink,
+  type SocialPlatform,
   SoftDeleteSocial,
   HardDeleteSocial,
 } from "@/services/social.services";
@@ -63,7 +63,7 @@ import { toPublicUrl } from "@/lib/image-url";
 
 type SocialItem = {
   id: string;
-  key: string;
+  key: SocialPlatform;
   label: string;
   icon: IconType;
   url?: string;
@@ -96,7 +96,7 @@ const getInitials = (name: string) =>
 const toProfile = (u: User | null | undefined): Profile => ({
   name: (u?.name?.trim() || u?.username?.trim() || "User").slice(0, 80),
   bio: (u?.bio ?? "") || "",
-  avatarUrl: toPublicUrl((u as any)?.avatar_url ?? (u as any)?.avatar ?? ""),
+  avatarUrl: toPublicUrl(u?.avatar_url ?? u?.avatar ?? ""),
   handle: u?.username || "username",
 });
 
@@ -109,7 +109,10 @@ const getDomain = (url: string) => {
   }
 };
 
-function extractUsername(platform: string, url?: string): string | undefined {
+function extractUsername(
+  platform: SocialPlatform | string,
+  url?: string
+): string | undefined {
   if (!url) return undefined;
   try {
     const u = new URL(url);
@@ -179,11 +182,13 @@ export default function DashboardPage() {
   const [editing, setEditing] = React.useState<LinkItem | null>(null);
   const [openConfirmDelete, setOpenConfirmDelete] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
-  const [targetDelete, setTargetDelete] = React.useState<LinkItem | null>(null);
+  const [targetDelete, setTargetDelete] = React.useState<LinkItem | null>(
+    null
+  );
   const [openEditSocial, setOpenEditSocial] = React.useState(false);
   const [selectedSocial, setSelectedSocial] = React.useState<{
     id: string | null;
-    platform: string | null;
+    platform: SocialPlatform | null;
     username?: string | null;
   }>({ id: null, platform: null, username: null });
   const [openSocialPopover, setOpenSocialPopover] = React.useState<
@@ -215,11 +220,17 @@ export default function DashboardPage() {
         setProfile(toProfile(user));
         await Promise.all([refetchLinks(), refetchSocials()]);
         if (!mounted) return;
-      } catch (e: any) {
+      } catch (e) {
         if (!mounted) return;
-        const status = e?.response?.status;
-        if (status === 401) toast.error("Not authenticated");
-        else toast.error(e?.message || "Failed to load data");
+        const status = (e as { response?: { status?: number } })?.response
+          ?.status;
+        if (status === 401) {
+          toast.error("Not authenticated");
+        } else if (e instanceof Error) {
+          toast.error(e.message);
+        } else {
+          toast.error("Failed to load data");
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -239,26 +250,6 @@ export default function DashboardPage() {
     setOpenEditLink(true);
   };
 
-  const onSaveEditedLink = async (values: { title: string; url: string }) => {
-    if (!editing) return;
-    const prev = links;
-    setLinks((p) =>
-      p.map((l) => (l.id === editing.id ? { ...l, ...values } : l))
-    );
-    try {
-      await updateLinkSvc(editing.id, values);
-      await refetchLinks();
-      toast.success("Link updated");
-    } catch (e: any) {
-      setLinks(prev);
-      toast.error(e?.message ?? "Failed to update link");
-      return;
-    } finally {
-      setOpenEditLink(false);
-      setEditing(null);
-    }
-  };
-
   const askDelete = (item: LinkItem) => {
     setTargetDelete(item);
     setOpenConfirmDelete(true);
@@ -275,9 +266,11 @@ export default function DashboardPage() {
       toast.success("Link deleted");
       setOpenConfirmDelete(false);
       setTargetDelete(null);
-    } catch (e: any) {
+    } catch (e) {
       setLinks(prev);
-      toast.error(e?.message ?? "Failed to delete link");
+      toast.error(
+        (e as Error)?.message ?? "Failed to delete link"
+      );
     } finally {
       setDeleting(false);
     }
@@ -292,11 +285,11 @@ export default function DashboardPage() {
       await restoreSocial(s.id);
       await refetchSocials();
       toast.success("Social restored");
-    } catch (e: any) {
+    } catch (e) {
       setSocials((prev) =>
         prev.map((x) => (x.id === s.id ? { ...x, is_active: false } : x))
       );
-      toast.error(e?.message ?? "Failed to restore");
+      toast.error((e as Error)?.message ?? "Failed to restore");
     } finally {
       setOpenSocialPopover(null);
     }
@@ -307,8 +300,8 @@ export default function DashboardPage() {
       await HardDeleteSocial(s.id);
       await refetchSocials();
       toast.success("Social deleted");
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to delete");
+    } catch (e) {
+      toast.error((e as Error)?.message ?? "Failed to delete");
     } finally {
       setOpenSocialPopover(null);
     }
@@ -561,7 +554,7 @@ export default function DashboardPage() {
                     username: null,
                   });
               }}
-              platform={(selectedSocial.platform as any) ?? null}
+              platform={selectedSocial.platform}
               initialUsername={selectedSocial.username ?? ""}
               onSave={async ({ platform, username }) => {
                 const resp = await upsertSocial({ platform, username });
@@ -590,9 +583,8 @@ export default function DashboardPage() {
                   name: user.name ?? p.name,
                   bio: user.bio ?? p.bio,
                   avatarUrl:
-                    toPublicUrl(
-                      (user as any).avatar_url ?? (user as any).avatar
-                    ) || p.avatarUrl,
+                    toPublicUrl(user.avatar_url ?? user.avatar) ||
+                    p.avatarUrl,
                 }));
                 toast.success("Profile updated");
               }}

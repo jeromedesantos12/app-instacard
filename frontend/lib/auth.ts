@@ -17,6 +17,7 @@ export type User = {
   name: string;
   bio: string | null;
   avatar: string | null;
+  avatar_url?: string | null;
   banner: string | null;
 };
 
@@ -40,12 +41,12 @@ export async function getCurrentUser(): Promise<User | null> {
     const cookieHeader = cookies().toString();
     if (!cookieHeader) return null;
 
-    const data = await fetchJson<any>(url, {
+    const data = await fetchJson<Record<string, unknown>>(url, {
       method: "GET",
       headers: { cookie: cookieHeader },
     });
 
-    const payload = data?.data ?? data;
+    const payload = (data as Record<string, unknown>)?.data ?? data;
     return payload as User;
   } catch {
     return null;

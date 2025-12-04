@@ -7,6 +7,7 @@ export type User = {
   name: string;
   bio: string | null;
   avatar: string | null;
+  avatar_url?: string | null;
   banner: string | null;
 };
 

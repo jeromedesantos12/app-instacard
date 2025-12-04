@@ -49,8 +49,9 @@ export function EditLinkDialog({
       if (onSuccess) await onSuccess();
       toast.success("Link updated");
       onOpenChange(false);
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to update link");
+    } catch (e: unknown) {
+      const error = e as { message?: string } | null;
+      toast.error(error?.message ?? "Failed to update link");
     } finally {
       setSaving(false);
     }
