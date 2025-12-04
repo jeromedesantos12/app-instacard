@@ -8,6 +8,7 @@ import {
   generateBioPrompt as aiGenerateBioPrompt,
   MODEL_NAME,
 } from "../connections/gen-ai";
+import { deleteFile, uploadFile } from "../utils/blob";
 
 export async function generateBio(
   req: Request,
@@ -106,13 +107,6 @@ export async function updateUser(
   const oldAvatarName = model?.avatar_url;
   const newAvatarName = processedFiles?.avatar_url?.fileName;
   const newAvatarBuffer = processedFiles?.avatar_url?.fileBuffer;
-  const uploadsDir = resolve(process.cwd(), "uploads", "user");
-  const oldAvatarPath = oldAvatarName
-    ? resolve(uploadsDir, "avatar", oldAvatarName)
-    : null;
-  const newAvatarPath = newAvatarName
-    ? resolve(uploadsDir, "avatar", newAvatarName)
-    : null;
   try {
     const { id } = (req as any).user;
     const { name, bio, theme } = req.body;
@@ -120,8 +114,8 @@ export async function updateUser(
     if (name) dataToUpdate.name = name;
     if (bio) dataToUpdate.bio = bio;
     if (theme) dataToUpdate.theme = theme;
-    if (newAvatarBuffer && newAvatarPath) {
-      await writeFile(newAvatarPath, newAvatarBuffer);
+    if (newAvatarBuffer && newAvatarName) {
+      await uploadFile("user", newAvatarName, newAvatarBuffer);
       dataToUpdate.avatar_url = newAvatarName;
     } else {
       dataToUpdate.avatar_url = oldAvatarName;
@@ -131,17 +125,11 @@ export async function updateUser(
       data: dataToUpdate,
     });
     const filesToDelete: string[] = [];
-    if (newAvatarName && oldAvatarPath) {
-      filesToDelete.push(oldAvatarPath);
+    if (newAvatarName && oldAvatarName) {
+      filesToDelete.push(oldAvatarName);
     }
     await Promise.all(
-      filesToDelete.map((file) =>
-        unlink(file).catch((err) => {
-          if (err.code !== "ENOENT") {
-            throw appError("Failed to clean up old file.", 500);
-          }
-        })
-      )
+      filesToDelete.map(async (file) => await deleteFile("user", file))
     );
     const user = await prisma.user.findUnique({
       select: {
@@ -163,16 +151,10 @@ export async function updateUser(
       data: user,
     });
   } catch (err) {
-    const rollbackPaths: string[] = [];
-    if (newAvatarPath) rollbackPaths.push(newAvatarPath);
+    const rollbackNames: string[] = [];
+    if (newAvatarName) rollbackNames.push(newAvatarName);
     await Promise.all(
-      rollbackPaths.map((file) =>
-        unlink(file).catch((err) => {
-          if (err.code !== "ENOENT") {
-            throw appError("Failed to clean up old file.", 500);
-          }
-        })
-      )
+      rollbackNames.map(async (file) => await deleteFile("user", file))
     );
     next(err);
   }
@@ -187,10 +169,6 @@ export async function deleteAvatar(
     const model = (req as any).model;
     const { id } = (req as any).user;
     const oldAvatarName = model?.avatar_url;
-    const uploadsDir = resolve(process.cwd(), "uploads", "user");
-    const oldAvatarPath = oldAvatarName
-      ? resolve(uploadsDir, "avatar", oldAvatarName)
-      : null;
     if (!oldAvatarName) {
       throw appError("No avatar to delete", 404);
     }
@@ -200,12 +178,8 @@ export async function deleteAvatar(
         avatar_url: null,
       },
     });
-    if (oldAvatarPath) {
-      await unlink(oldAvatarPath).catch((err) => {
-        if (err.code !== "ENOENT") {
-          throw appError("Failed to delete old avatar file.", 500);
-        }
-      });
+    if (oldAvatarName) {
+      await deleteFile("user", oldAvatarName);
     }
     res.status(200).json({
       status: "Success",

@@ -7,16 +7,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --loader ts-node/esm src/app.ts",
+    "build": "tsc",
     "seed": "ts-node src/connections/seed.ts",
     "studio": "bunx prisma studio",
     "generate": "bunx prisma generate",
     "migrate": "bunx prisma migrate dev --name init",
-    "psql": "psql -U jeremy -d dumb"
+    "psql": "psql -U jeremy -d dumb",
+    "d-build": "docker build -t jeromedesantos/jeremy-instacard-be:latest .",
+    "d-push": "docker push jeromedesantos/jeremy-instacard-be:latest"
   },
   "dependencies": {
     "@google/genai": "^1.24.0",
     "@prisma/client": "^6.17.1",
     "@prisma/extension-accelerate": "^2.0.2",
+    "@vercel/blob": "^2.0.0",
     "bcrypt": "^6.0.0",
     "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
