@@ -1,11 +1,9 @@
 import cookieParser from "cookie-parser";
 import express from "express";
 import http from "http";
-import swaggerUi from "swagger-ui-express";
 import { config } from "dotenv";
 import { errorHandler } from "./middlewares/error";
 import { corsMiddleware } from "./utils/cors";
-import { swaggerDocument } from "./utils/swagger";
 import router from "./routes";
 
 config();
@@ -21,7 +19,6 @@ app.use(corsMiddleware);
 app.use(express.urlencoded({ extended: true }));
 
 // app.use("/uploads", express.static(resolve(process.cwd(), "uploads")));
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(router);
 app.use(errorHandler);

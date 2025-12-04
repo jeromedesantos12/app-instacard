@@ -182,9 +182,7 @@ export default function DashboardPage() {
   const [editing, setEditing] = React.useState<LinkItem | null>(null);
   const [openConfirmDelete, setOpenConfirmDelete] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
-  const [targetDelete, setTargetDelete] = React.useState<LinkItem | null>(
-    null
-  );
+  const [targetDelete, setTargetDelete] = React.useState<LinkItem | null>(null);
   const [openEditSocial, setOpenEditSocial] = React.useState(false);
   const [selectedSocial, setSelectedSocial] = React.useState<{
     id: string | null;
@@ -268,9 +266,7 @@ export default function DashboardPage() {
       setTargetDelete(null);
     } catch (e) {
       setLinks(prev);
-      toast.error(
-        (e as Error)?.message ?? "Failed to delete link"
-      );
+      toast.error((e as Error)?.message ?? "Failed to delete link");
     } finally {
       setDeleting(false);
     }
@@ -583,8 +579,7 @@ export default function DashboardPage() {
                   name: user.name ?? p.name,
                   bio: user.bio ?? p.bio,
                   avatarUrl:
-                    toPublicUrl(user.avatar_url ?? user.avatar) ||
-                    p.avatarUrl,
+                    toPublicUrl(user.avatar_url ?? user.avatar) || p.avatarUrl,
                 }));
                 toast.success("Profile updated");
               }}

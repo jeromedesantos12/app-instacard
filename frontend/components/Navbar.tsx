@@ -122,7 +122,11 @@ export function Navbar({
         );
         const bio = (u?.bio ?? "") || "";
         const avatarUrl =
-          toPublicUrl((u as Record<string, string>)?.avatar_url ?? (u as Record<string, string>)?.avatar ?? "") || "";
+          toPublicUrl(
+            (u as Record<string, string>)?.avatar_url ??
+              (u as Record<string, string>)?.avatar ??
+              ""
+          ) || "";
         setProfile({ name, bio, avatarUrl });
       } catch {}
     })();
@@ -299,8 +303,10 @@ export function Navbar({
             name: user.name ?? p.name,
             bio: user.bio ?? p.bio,
             avatarUrl:
-              toPublicUrl((user as Record<string, string>).avatar_url ?? (user as Record<string, string>).avatar) ??
-              p.avatarUrl,
+              toPublicUrl(
+                (user as Record<string, string>).avatar_url ??
+                  (user as Record<string, string>).avatar
+              ) ?? p.avatarUrl,
           }));
           toast.success("Profile updated");
           onProfileUpdated?.(user as Record<string, unknown>);

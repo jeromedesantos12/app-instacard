@@ -157,8 +157,11 @@ export default function PublicProfilePage() {
     );
   }
   const avatarSrc =
-    toPublicUrl(((data as Record<string, unknown>).avatar_url as string | undefined) ?? ((data as Record<string, unknown>).avatar as string | undefined) ?? "") ||
-    "/avatar-placeholder.jpg";
+    toPublicUrl(
+      ((data as Record<string, unknown>).avatar_url as string | undefined) ??
+        ((data as Record<string, unknown>).avatar as string | undefined) ??
+        ""
+    ) || "/avatar-placeholder.jpg";
 
   const links = (data.links ?? [])
     .filter((l) => l.is_active !== false)
