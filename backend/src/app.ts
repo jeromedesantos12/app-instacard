@@ -3,7 +3,7 @@ import express from "express";
 import http from "http";
 import { config } from "dotenv";
 import { errorHandler } from "./middlewares/error";
-import { corsMiddleware } from "./utils/cors";
+// import { corsMiddleware } from "./utils/cors";
 import router from "./routes";
 
 config();
